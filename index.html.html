@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="LB System">
+<meta name="theme-color" content="#FFFFFF">
+<title>LB System</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FF385C'/%3E%3Ctext x='50' y='65' font-size='42' text-anchor='middle' fill='white' font-family='Arial,sans-serif' font-weight='700'%3ELB%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23FF385C'/%3E%3Ctext x='50' y='65' font-size='42' text-anchor='middle' fill='white' font-family='Arial,sans-serif' font-weight='700'%3ELB%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFFFFF;
+    --bg-soft: #F7F7F7;
+    --card: #FFFFFF;
+    --border: #EBEBEB;
+    --ink: #222222;
+    --ink-dim: #717171;
+    --accent: #FF385C;
+    --accent-dark: #E31C5F;
+    --dark: #222222;
+    --teal: #00A699;
+    --blue: #2D6CDF;
+    --shadow: 0 6px 20px rgba(0,0,0,.06);
+    --shadow-lift: 0 2px 8px rgba(0,0,0,.10);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:'Plus Jakarta Sans',sans-serif;height:100%;overscroll-behavior-y:none;}
+  body{padding-bottom:calc(78px + env(safe-area-inset-bottom));padding-top:env(safe-area-inset-top);-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'Plus Jakarta Sans',sans-serif;margin:0;}
+  .app{max-width:520px;margin:0 auto;min-height:100vh;position:relative;}
+  header.top{padding:20px 20px 16px;}
+  header.top h1{font-size:26px;font-weight:800;letter-spacing:-.3px;}
+  header.top .sub{color:var(--ink-dim);font-size:14px;margin-top:3px;}
+  main{padding:4px 16px 30px;}
+  .page{display:none;animation:fade .3s ease;}
+  .page.active{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  .card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--shadow);}
+  .label{color:var(--ink-dim);font-size:13px;font-weight:600;margin-bottom:10px;display:block;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{border:1.5px solid var(--border);background:#fff;color:var(--ink);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .15s ease;}
+  .pill:active{transform:scale(.96);}
+  .pill.selected{background:var(--dark);border-color:var(--dark);color:#fff;}
+  .pill.small{padding:7px 13px;font-size:12.5px;}
+  .btn{width:100%;background:var(--accent);color:#fff;border:none;padding:16px;border-radius:14px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;margin-top:6px;box-shadow:var(--shadow-lift);transition:transform .12s ease, opacity .15s ease;}
+  .btn:active{transform:scale(.98);}
+  .btn:disabled{opacity:.35;box-shadow:none;}
+  .btn.secondary{background:#fff;border:1.5px solid var(--dark);color:var(--dark);box-shadow:none;}
+  .btn.dark{background:var(--dark);}
+  .btn.small{width:auto;padding:11px 16px;font-size:14px;margin-top:0;border-radius:12px;}
+  .btn.tiny{width:auto;padding:8px 12px;font-size:12.5px;margin-top:0;border-radius:10px;}
+  input[type=text],input[type=number],input[type=date],input[type=url],select,textarea{
+    width:100%;background:var(--bg-soft);border:1.5px solid transparent;color:var(--ink);padding:13px 14px;border-radius:12px;font-size:15px;font-family:inherit;margin-bottom:12px;transition:border-color .15s;
+  }
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--dark);background:#fff;}
+  textarea{resize:vertical;min-height:60px;}
+  .num{font-weight:800;font-variant-numeric:tabular-nums;}
+  .accenttext{color:var(--accent);}
+  .tealtext{color:var(--teal);}
+  .bluetext{color:var(--blue);}
+  .dim{color:var(--ink-dim);}
+  .hr{height:1px;background:var(--border);margin:16px 0;}
+  .entry{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
+  .entry:last-child{border-bottom:none;}
+  .entry .name{font-size:14.5px;font-weight:600;}
+  .entry .meta{font-size:12.5px;color:var(--ink-dim);margin-top:2px;}
+  .badge{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:999px;background:var(--bg-soft);color:var(--ink-dim);}
+  .badge.done{background:#E1F5F0;color:var(--teal);}
+  .badge.cat{background:#EEF3FF;color:var(--blue);}
+  .empty{color:var(--ink-dim);font-size:14px;text-align:center;padding:26px 10px;}
+  .task-box{border:none;background:linear-gradient(135deg,#FFF0F3,#FFF8F2);}
+  .task-box .label{color:var(--accent-dark);}
+  .progress-track{height:10px;background:var(--bg-soft);border-radius:999px;overflow:hidden;margin:12px 0;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#FF7A8A);border-radius:999px;transition:width .4s ease;}
+  details summary{cursor:pointer;font-size:14px;color:var(--accent-dark);font-weight:600;margin:8px 0;list-style:none;}
+  details summary::-webkit-details-marker{display:none;}
+  .strategy h2{font-size:17px;font-weight:800;margin:22px 0 8px;}
+  .strategy h2:first-child{margin-top:0;}
+  .strategy p, .strategy li{font-size:14.5px;line-height:1.6;color:var(--ink);}
+  .strategy ul{padding-left:20px;margin:8px 0;}
+  nav.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-top:1px solid var(--border);display:flex;padding-bottom:env(safe-area-inset-bottom);z-index:50;}
+  nav.bottom button{flex:1;background:none;border:none;color:#B0B0B0;font-family:inherit;font-size:10.3px;font-weight:600;padding:12px 0 10px;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;}
+  nav.bottom button.active{color:var(--accent);}
+  nav.bottom svg{width:21px;height:21px;}
+  .stage-select{width:auto;margin:0;padding:8px 10px;font-size:12.5px;font-weight:600;border-radius:10px;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .field-title{font-size:13px;color:var(--ink-dim);font-weight:600;margin-bottom:6px;}
+  .stat-row{display:flex;justify-content:space-between;align-items:baseline;margin-top:6px;}
+  .avatar{width:38px;height:38px;border-radius:50%;background:var(--bg-soft);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:var(--ink-dim);flex-shrink:0;}
+  .entry-left{display:flex;align-items:center;gap:12px;}
+  .case-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+  .case-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+  .case-link{display:block;font-size:13.5px;color:var(--blue);word-break:break-all;margin-top:8px;text-decoration:none;}
+  .case-actions{display:flex;gap:8px;margin-top:12px;}
+  .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;padding:10px 18px;border-radius:999px;font-size:13.5px;font-weight:600;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <h1 id="pageTitle">Сегодня</h1>
+    <div class="sub" id="pageSub">Проверка перед стартом дня</div>
+  </header>
+
+  <main>
+    <!-- TODAY -->
+    <section class="page active" id="page-today">
+      <div id="checkinBlock" class="card">
+        <span class="label">Как настроение и самочувствие?</span>
+        <div class="row" id="moodRow"></div>
+        <div class="hr"></div>
+        <span class="label">Сколько времени сейчас реально есть?</span>
+        <div class="row" id="timeRow"></div>
+        <input type="number" id="timeCustom" placeholder="или впиши минуты вручную" style="display:none;margin-top:12px;margin-bottom:0;">
+        <button class="btn" id="getTaskBtn" disabled>Получить задачу</button>
+      </div>
+
+      <div id="taskBlock" style="display:none;">
+        <div class="card task-box">
+          <span class="label">Задача на сейчас</span>
+          <div id="taskText" style="font-size:15.5px;line-height:1.55;font-weight:500;"></div>
+          <div class="row" style="margin-top:16px;">
+            <button class="btn small" id="doneBtn">Отметить выполненным</button>
+            <button class="btn small secondary" id="newCheckinBtn">Новый чек-ин</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <span class="label">История</span>
+        <div id="historyList"><div class="empty">Пока пусто</div></div>
+      </div>
+    </section>
+
+    <!-- FINANCE -->
+    <section class="page" id="page-finance">
+      <div class="card">
+        <span class="label">Итого чистыми</span>
+        <div style="font-size:34px;" class="num accenttext" id="netTotal">€0</div>
+        <div class="dim" style="font-size:13.5px;margin-top:6px;">
+          Оборот: <span class="num" id="grossTotal" style="font-weight:700;"></span> · Налог 37%: <span class="num" id="taxTotal" style="font-weight:700;"></span>
+        </div>
+      </div>
+
+      <button class="btn dark" id="addIncomeToggle">+ Добавить доход</button>
+
+      <div class="card" id="incomeForm" style="display:none;margin-top:14px;">
+        <div class="field-title">Клиент</div>
+        <input type="text" id="fClient" placeholder="Имя клиента">
+        <div class="field-title">Откуда пришёл</div>
+        <div class="row" id="sourceRow"></div>
+        <div style="height:12px;"></div>
+        <div class="field-title">Услуга</div>
+        <div class="row" id="serviceRow"></div>
+        <div style="height:12px;"></div>
+        <div class="field-title">Сумма (€, до вычета налога)</div>
+        <input type="number" id="fAmount" placeholder="напр. 500">
+        <div class="dim" style="font-size:13.5px;margin-bottom:12px;">Чистыми получится: <span class="num tealtext" id="netPreview">€0</span></div>
+        <button class="btn" id="saveIncomeBtn">Сохранить</button>
+      </div>
+
+      <div class="card">
+        <span class="label">Клиенты и этапы</span>
+        <div id="clientList"><div class="empty">Пока нет клиентов</div></div>
+      </div>
+
+      <div class="card">
+        <span class="label">Операции</span>
+        <div id="incomeList"><div class="empty">Пока нет записей</div></div>
+      </div>
+    </section>
+
+    <!-- CASES / CRM -->
+    <section class="page" id="page-cases">
+      <button class="btn dark" id="addCaseToggle">+ Добавить кейс</button>
+
+      <div class="card" id="caseForm" style="display:none;margin-top:14px;">
+        <input type="hidden" id="caseEditIndex" value="">
+        <div class="field-title">Клиент</div>
+        <input type="text" id="csName" placeholder="Имя клиента / компания">
+        <div class="field-title">Категория сайта</div>
+        <div class="row" id="categoryRow"></div>
+        <div style="height:12px;"></div>
+        <div class="field-title">Ссылка на сайт</div>
+        <input type="url" id="csLink" placeholder="https://...">
+        <button class="btn" id="saveCaseBtn">Сохранить кейс</button>
+      </div>
+
+      <div class="row" id="categoryFilterRow" style="margin-bottom:14px;"></div>
+
+      <div id="casesList"><div class="empty">Пока нет сохранённых кейсов</div></div>
+    </section>
+
+    <!-- GOALS -->
+    <section class="page" id="page-goals">
+      <button class="btn dark" id="addGoalToggle">+ Добавить цель</button>
+      <div class="card" id="goalForm" style="display:none;margin-top:14px;">
+        <div class="field-title">Название цели</div>
+        <input type="text" id="gTitle" placeholder="напр. Подушка на переезд">
+        <div class="grid2">
+          <div>
+            <div class="field-title">Сумма, €</div>
+            <input type="number" id="gAmount" placeholder="2000">
+          </div>
+          <div>
+            <div class="field-title">К какому сроку</div>
+            <input type="date" id="gDate">
+          </div>
+        </div>
+        <button class="btn" id="saveGoalBtn">Сохранить цель</button>
+      </div>
+      <div id="goalsList"></div>
+    </section>
+
+    <!-- STRATEGY -->
+    <section class="page" id="page-strategy">
+      <div class="card strategy">
+        <h2>Диагноз</h2>
+        <p>200 холодных контактов → 4 ответа → 0 звонков. Проблема на этапе «лид → ответ», не в продукте. Обе продажи пришли из тёплых каналов (Telegram, TikTok).</p>
+
+        <h2>Цель</h2>
+        <p>€2000–3000/мес чистыми. Мес 1–2: 2–3 сделки. Мес 3–4: 4–6 сделок + recurring. Мес 5–6: 6–8 сделок, recurring закрывает 30–40%.</p>
+
+        <h2>Модель и рынок</h2>
+        <p>Productized services (пакеты) + recurring поддержка. Рынок №1 — Рига/русскоязычный сегмент, №2 — русскоязычные предприниматели в ЕС.</p>
+
+        <h2>Ниша и позиционирование</h2>
+        <p>Локальный малый бизнес услуг + бильярд-нетворк + Telegram-группы. Оффер: «сайт и системы, чтобы клиенты сами находили вас и записывались — без необходимости самому разбираться в технологиях».</p>
+
+        <h2>Продукты</h2>
+        <ul>
+          <li>START — €300–500, лендинг, 3–5 дней</li>
+          <li>BUSINESS — €1000–1500, Shopify/многостраничный + запись, 7–10 дней</li>
+          <li>PRO — €2500–4000, автоматизации/бот, 2–4 недели</li>
+          <li>Поддержка — €30–50/мес на клиента (recurring)</li>
+        </ul>
+        <p><strong>Правило:</strong> 50% предоплата обязательна до старта работы, без исключений.</p>
+
+        <h2>Каналы</h2>
+        <p>Приоритет 1 — тёплые: Telegram-группы, бильярд-контакты, рекомендации от текущих клиентов. Приоритет 2 — точечный скоринг по Google Maps (не спам-рассылка).</p>
+
+        <h2>Что нельзя делать</h2>
+        <ul>
+          <li>Холодные немецкоязычные рассылки без пересборки подхода</li>
+          <li>Начинать работу без 50% предоплаты</li>
+          <li>Контент «как под курсы» вместо реальных кейсов</li>
+          <li>Нанимать команду до 3+ сделок подряд</li>
+        </ul>
+
+        <h2>Режим сна</h2>
+        <p>Сдвигать подъём на 30–60 мин раньше каждые 2–3 дня. Дневной свет утром 15–20 мин. Кофеин не позже 8 часов до сна. Экран — стоп за 30–45 мин до сна.</p>
+
+        <details>
+          <summary>Полный текст стратегии</summary>
+          <p class="dim">Полная версия — в файле «strategiya-6-mesyacev.md», отправленном отдельно в чате.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom">
+    <button class="nav-btn active" data-page="today">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      Сегодня
+    </button>
+    <button class="nav-btn" data-page="finance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.2 9.5h3.6a1.9 1.9 0 010 3.8h-1.6a1.9 1.9 0 000 3.8h3.6"/></svg>
+      Финансы
+    </button>
+    <button class="nav-btn" data-page="cases">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="6.5" width="17" height="13" rx="2"/><path d="M3.5 9.5h17"/><path d="M8 6.5V5a1.5 1.5 0 011.5-1.5h5A1.5 1.5 0 0116 5v1.5"/></svg>
+      CRM
+    </button>
+    <button class="nav-btn" data-page="goals">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></svg>
+      Цели
+    </button>
+    <button class="nav-btn" data-page="strategy">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V6a2 2 0 012-2h12a2 2 0 012 2v13.5"/><path d="M4 19.5A1.5 1.5 0 015.5 18H20"/><path d="M8 7h8M8 10.5h8"/></svg>
+      Стратегия
+    </button>
+  </nav>
+</div>
+
+<div class="toast" id="toast">Скопировано</div>
+
+<script>
+const STORE_KEY = 'lb_system_data_v1';
+const TITLES = {
+  today: ['Сегодня','Проверка перед стартом дня'],
+  finance: ['Финансы','Доходы, клиенты, этапы'],
+  cases: ['CRM · Кейсы','Все клиенты с сайтами и ссылками'],
+  goals: ['Цели','Что ты хочешь достичь и когда'],
+  strategy: ['Стратегия','Полный план на 6 месяцев']
+};
+
+let state = { checkins: [], entries: [], clients: [], goals: [] };
+let selectedMood = null, selectedTime = null, selectedMinutes = null;
+let selectedSource = null, selectedService = null;
+let selectedCategory = null;
+let caseFilter = 'Все';
+
+const SERVICES = {
+  'START': {label:'START · €300–500', amount:400},
+  'BUSINESS': {label:'BUSINESS · €1000–1500', amount:1200},
+  'PRO': {label:'PRO · €2500–4000', amount:3000},
+  'SUPPORT': {label:'Поддержка · €30–50/мес', amount:40},
+  'OTHER': {label:'Другое', amount:0}
+};
+const SOURCES = ['Instagram','Telegram','TikTok','Знакомство','Google Maps','Другое'];
+const STAGES = ['Lead','Контакт установлен','Ответил','Звонок назначен','Звонок проведён','Предложение отправлено','Переговоры','Выиграно','Проиграно'];
+const CATEGORIES = ['Салон красоты','Барбершоп','Ресторан/кафе','Стройка/ремонт','Эксперт/услуги','Shopify/магазин','Другое'];
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw) state = JSON.parse(raw);
+    state.clients.forEach(c=>{ if(c.category===undefined) c.category=''; if(c.link===undefined) c.link=''; });
+  }catch(e){ /* first run */ }
+}
+function saveState(){
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(state)); }
+  catch(e){ console.error('save failed', e); }
+}
+
+function fmtEur(n){ return '€' + Math.round(n).toLocaleString('de-DE'); }
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 1600);
+}
+
+// ---------- NAV ----------
+document.querySelectorAll('.nav-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const page = btn.dataset.page;
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById('page-'+page).classList.add('active');
+    document.getElementById('pageTitle').textContent = TITLES[page][0];
+    document.getElementById('pageSub').textContent = TITLES[page][1];
+    if(page==='finance') renderFinance();
+    if(page==='cases') renderCases();
+    if(page==='goals') renderGoals();
+  });
+});
+
+// ---------- TODAY ----------
+const MOODS = [['😩','плохо'],['😐','средне'],['🙂','норм'],['💪','отлично']];
+const TIMES = [['30 мин',30],['1 час',60],['2 часа',120],['4+ часа',240]];
+
+function buildMoodRow(){
+  const row = document.getElementById('moodRow');
+  row.innerHTML='';
+  MOODS.forEach(([emoji,label])=>{
+    const p = document.createElement('button');
+    p.className='pill'; p.type='button';
+    p.textContent = emoji+' '+label;
+    p.addEventListener('click',()=>{
+      selectedMood = label;
+      [...row.children].forEach(c=>c.classList.remove('selected'));
+      p.classList.add('selected');
+      checkReady();
+    });
+    row.appendChild(p);
+  });
+}
+function buildTimeRow(){
+  const row = document.getElementById('timeRow');
+  row.innerHTML='';
+  TIMES.forEach(([t,mins])=>{
+    const p = document.createElement('button');
+    p.className='pill'; p.type='button'; p.textContent=t;
+    p.addEventListener('click',()=>{
+      selectedTime = t; selectedMinutes = mins;
+      document.getElementById('timeCustom').style.display='none';
+      document.getElementById('timeCustom').value='';
+      [...row.children].forEach(c=>c.classList.remove('selected'));
+      p.classList.add('selected');
+      checkReady();
+    });
+    row.appendChild(p);
+  });
+  const other = document.createElement('button');
+  other.className='pill'; other.type='button'; other.textContent='другое';
+  other.addEventListener('click',()=>{
+    document.getElementById('timeCustom').style.display='block';
+    [...row.children].forEach(c=>c.classList.remove('selected'));
+    other.classList.add('selected');
+    selectedTime = null; selectedMinutes = null;
+    checkReady();
+  });
+  row.appendChild(other);
+}
+document.getElementById('timeCustom').addEventListener('input', e=>{
+  const v = parseInt(e.target.value);
+  if(v){ selectedMinutes = v; selectedTime = v+' мин'; } else { selectedMinutes=null; selectedTime=null; }
+  checkReady();
+});
+function checkReady(){
+  document.getElementById('getTaskBtn').disabled = !(selectedMood && selectedMinutes);
+}
+
+function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function generateTask(mood, minutes){
+  const active = state.clients.filter(c=>c.stage!=='Выиграно' && c.stage!=='Проиграно');
+  const calls = active.filter(c=>c.stage==='Звонок назначен');
+  const proposals = active.filter(c=>c.stage==='Предложение отправлено');
+  const early = active.filter(c=>['Lead','Контакт установлен','Ответил'].includes(c.stage));
+  const weekAgo = Date.now()-7*86400000;
+  const checkinsThisWeek = state.checkins.filter(c=>new Date(c.date).getTime()>weekAgo).length;
+
+  if(mood==='плохо'){
+    return pick([
+      `Минимальный день: выйди на 15 минут на дневной свет, потом напиши одно тёплое сообщение — знакомому по бильярду или в Telegram-группу. Больше сегодня от себя не требуй.`,
+      `Сегодня — только необходимый минимум: короткая прогулка на свету и один follow-up существующему лиду. Этого достаточно, чтобы не выпасть из ритма.`,
+      proposals.length ? `Одно маленькое действие: напиши короткий follow-up клиенту «${proposals[0].name}» по предложению — просто узнай, остались ли вопросы. Больше ничего сегодня делать не обязательно.` : `Одно действие: короткое сообщение любому тёплому контакту (бильярд/Telegram). На этом день можно закрывать.`
+    ]);
+  }
+  if(calls.length && minutes>=30){
+    return `Сейчас в приоритете звонок с «${calls[0].name}» — подготовь короткий план (боль → решение → цена → предоплата 50%) и проведи или запланируй звонок в ближайшее время.`;
+  }
+  if(proposals.length && minutes>=15){
+    return `У тебя есть отправленное предложение клиенту «${proposals[0].name}» без ответа. Сделай follow-up прямо сейчас: короткое сообщение с одним новым аргументом (например, пример готовой работы), не повторяй старый текст.`;
+  }
+  if(minutes<=30){
+    return pick([
+      `30 минут: напиши 2-3 персонализированных сообщения в тёплые каналы (Telegram-группы, знакомые по бильярду) — коротко, по делу, без спама.`,
+      `30 минут: попроси у одного из текущих клиентов рекомендацию или отзыв — это твой самый рабочий канал сейчас.`,
+      early.length ? `30 минут: продвинь одного из ранних лидов («${early[0].name}») на следующий этап — напиши и предложи звонок.` : `30 минут: зайди в 1-2 Telegram-группы русскоязычных предпринимателей и оставь пост о своих услугах с примером работы.`
+    ]);
+  }
+  if(minutes<=90){
+    return pick([
+      `~1 час: составь список 10-15 локальных бизнесов (салоны, мастера) по критериям — нет сайта или слабый сайт, активный Instagram — и подготовь персонализированные сообщения на русском для тёплого захода через общих знакомых, где возможно.`,
+      `~1 час: сделай точечный скоринг 10 бизнесов по Google Maps + подготовь 3-5 персонализированных голосовых или текстовых сообщений (не шаблон).`,
+      checkinsThisWeek<3 ? `~1 час: на этой неделе было мало активности по продажам — сделай блок из 5 тёплых контактов (Telegram/бильярд) сейчас, это выше приоритетом, чем разработка.` : `~1 час: доработай один активный проект клиента, чтобы сдать его без задержек — довольные клиенты дают рекомендации.`
+    ]);
+  }
+  return pick([
+    `Большой блок: 45 минут — тёплый outreach (Telegram-группы, бильярд-контакты, рекомендации от текущих клиентов), затем оставшееся время — работа над активным проектом клиента. Продажи всегда идут первыми.`,
+    `Большой блок: если есть активный проект — доведи его до сдачи. Если нет — потрать блок на подготовку кейсов/примеров работ для показа новым лидам, это то, чего тебе не хватает при холодных контактах.`,
+    early.length ? `Большой блок: обзвони/напиши всем лидам на ранних этапах (${early.map(c=>c.name).join(', ')}) — переведи хотя бы одного на этап звонка, затем переключись на разработку.` : `Большой блок: 1 час — активный поиск через тёплые каналы, остальное время — разработка или подготовка предложений для отправленных клиентов.`
+  ]);
+}
+
+document.getElementById('getTaskBtn').addEventListener('click', ()=>{
+  const task = generateTask(selectedMood, selectedMinutes);
+  document.getElementById('taskText').textContent = task;
+  document.getElementById('checkinBlock').style.display='none';
+  document.getElementById('taskBlock').style.display='block';
+  state.checkins.push({date: new Date().toISOString(), mood: selectedMood, time: selectedTime, task, done:false});
+  saveState();
+  renderHistory();
+});
+
+document.getElementById('doneBtn').addEventListener('click', ()=>{
+  const last = state.checkins[state.checkins.length-1];
+  if(last) last.done = true;
+  saveState();
+  renderHistory();
+  resetCheckin();
+});
+document.getElementById('newCheckinBtn').addEventListener('click', resetCheckin);
+
+function resetCheckin(){
+  selectedMood=null; selectedTime=null; selectedMinutes=null;
+  document.getElementById('timeCustom').style.display='none';
+  document.getElementById('timeCustom').value='';
+  buildMoodRow(); buildTimeRow(); checkReady();
+  document.getElementById('checkinBlock').style.display='block';
+  document.getElementById('taskBlock').style.display='none';
+}
+
+function renderHistory(){
+  const list = document.getElementById('historyList');
+  if(!state.checkins.length){ list.innerHTML='<div class="empty">Пока пусто</div>'; return; }
+  list.innerHTML='';
+  [...state.checkins].reverse().slice(0,15).forEach(c=>{
+    const d = document.createElement('div');
+    d.className='entry';
+    const date = new Date(c.date);
+    d.innerHTML = `<div class="entry-left"><div class="avatar">${c.mood==='отлично'?'💪':c.mood==='норм'?'🙂':c.mood==='средне'?'😐':'😩'}</div>
+      <div><div class="name">${c.task.length>52?c.task.slice(0,52)+'…':c.task}</div>
+      <div class="meta">${date.toLocaleDateString('ru-RU')} · ${c.time}</div></div></div>
+      <span class="badge ${c.done?'done':''}">${c.done?'готово':'—'}</span>`;
+    list.appendChild(d);
+  });
+}
+
+// ---------- FINANCE ----------
+document.getElementById('addIncomeToggle').addEventListener('click', ()=>{
+  const f = document.getElementById('incomeForm');
+  f.style.display = f.style.display==='none' ? 'block' : 'none';
+});
+function buildSourceRow(){
+  const row = document.getElementById('sourceRow'); row.innerHTML='';
+  SOURCES.forEach(s=>{
+    const p = document.createElement('button'); p.className='pill'; p.type='button'; p.textContent=s;
+    p.addEventListener('click',()=>{ selectedSource=s; [...row.children].forEach(c=>c.classList.remove('selected')); p.classList.add('selected'); });
+    row.appendChild(p);
+  });
+}
+function buildServiceRow(){
+  const row = document.getElementById('serviceRow'); row.innerHTML='';
+  Object.entries(SERVICES).forEach(([key,val])=>{
+    const p = document.createElement('button'); p.className='pill'; p.type='button'; p.textContent=val.label;
+    p.addEventListener('click',()=>{
+      selectedService=key;
+      [...row.children].forEach(c=>c.classList.remove('selected'));
+      p.classList.add('selected');
+      if(val.amount) { document.getElementById('fAmount').value = val.amount; updateNetPreview(); }
+    });
+    row.appendChild(p);
+  });
+}
+document.getElementById('fAmount').addEventListener('input', updateNetPreview);
+function updateNetPreview(){
+  const amt = parseFloat(document.getElementById('fAmount').value) || 0;
+  document.getElementById('netPreview').textContent = fmtEur(amt*0.63);
+}
+
+document.getElementById('saveIncomeBtn').addEventListener('click', ()=>{
+  const client = document.getElementById('fClient').value.trim();
+  const amount = parseFloat(document.getElementById('fAmount').value);
+  if(!client || !amount || !selectedSource || !selectedService){
+    alert('Заполни клиента, сумму, источник и услугу'); return;
+  }
+  const net = amount*0.63;
+  state.entries.push({date: new Date().toISOString(), client, source: selectedSource, service: SERVICES[selectedService].label, gross: amount, net});
+  let c = state.clients.find(c=>c.name.toLowerCase()===client.toLowerCase());
+  if(!c){ c = {name: client, source: selectedSource, stage: STAGES[STAGES.length-2], category:'', link:''}; state.clients.push(c); }
+  saveState();
+  document.getElementById('fClient').value=''; document.getElementById('fAmount').value=''; document.getElementById('netPreview').textContent='€0';
+  selectedSource=null; selectedService=null;
+  document.getElementById('incomeForm').style.display='none';
+  renderFinance();
+});
+
+function renderFinance(){
+  buildSourceRow(); buildServiceRow();
+  const gross = state.entries.reduce((s,e)=>s+e.gross,0);
+  const net = state.entries.reduce((s,e)=>s+e.net,0);
+  document.getElementById('grossTotal').textContent = fmtEur(gross);
+  document.getElementById('taxTotal').textContent = fmtEur(gross-net);
+  document.getElementById('netTotal').textContent = fmtEur(net);
+
+  const cList = document.getElementById('clientList');
+  if(!state.clients.length){ cList.innerHTML='<div class="empty">Пока нет клиентов</div>'; }
+  else{
+    cList.innerHTML='';
+    state.clients.forEach((c,i)=>{
+      const totalPaid = state.entries.filter(e=>e.client.toLowerCase()===c.name.toLowerCase()).reduce((s,e)=>s+e.net,0);
+      const row = document.createElement('div'); row.className='entry';
+      const sel = document.createElement('select'); sel.className='stage-select';
+      STAGES.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; if(s===c.stage) o.selected=true; sel.appendChild(o); });
+      sel.addEventListener('change', ()=>{ state.clients[i].stage = sel.value; saveState(); });
+      row.innerHTML = `<div class="entry-left"><div class="avatar">${c.name.slice(0,2).toUpperCase()}</div><div><div class="name">${c.name}</div><div class="meta">${c.source} · ${fmtEur(totalPaid)} чистыми</div></div></div>`;
+      row.appendChild(sel);
+      cList.appendChild(row);
+    });
+  }
+
+  const iList = document.getElementById('incomeList');
+  if(!state.entries.length){ iList.innerHTML='<div class="empty">Пока нет записей</div>'; }
+  else{
+    iList.innerHTML='';
+    [...state.entries].reverse().forEach(e=>{
+      const row = document.createElement('div'); row.className='entry';
+      row.innerHTML = `<div><div class="name">${e.client} · ${e.service}</div><div class="meta">${new Date(e.date).toLocaleDateString('ru-RU')} · ${e.source}</div></div>
+        <div style="text-align:right"><div class="num tealtext">${fmtEur(e.net)}</div><div class="meta">из ${fmtEur(e.gross)}</div></div>`;
+      iList.appendChild(row);
+    });
+  }
+}
+
+// ---------- CASES / CRM ----------
+document.getElementById('addCaseToggle').addEventListener('click', ()=>{
+  document.getElementById('caseEditIndex').value='';
+  document.getElementById('csName').value=''; document.getElementById('csLink').value='';
+  selectedCategory=null;
+  buildCategoryRow();
+  const f = document.getElementById('caseForm');
+  f.style.display = f.style.display==='none' ? 'block' : 'none';
+});
+function buildCategoryRow(){
+  const row = document.getElementById('categoryRow'); row.innerHTML='';
+  CATEGORIES.forEach(cat=>{
+    const p = document.createElement('button'); p.className='pill'; p.type='button'; p.textContent=cat;
+    if(cat===selectedCategory) p.classList.add('selected');
+    p.addEventListener('click',()=>{ selectedCategory=cat; [...row.children].forEach(c=>c.classList.remove('selected')); p.classList.add('selected'); });
+    row.appendChild(p);
+  });
+}
+document.getElementById('saveCaseBtn').addEventListener('click', ()=>{
+  const name = document.getElementById('csName').value.trim();
+  const link = document.getElementById('csLink').value.trim();
+  const editIdx = document.getElementById('caseEditIndex').value;
+  if(!name || !selectedCategory){ alert('Укажи имя клиента и категорию'); return; }
+  if(editIdx!==''){
+    const c = state.clients[parseInt(editIdx)];
+    c.name = name; c.category = selectedCategory; c.link = link;
+  } else {
+    let c = state.clients.find(c=>c.name.toLowerCase()===name.toLowerCase());
+    if(c){ c.category = selectedCategory; c.link = link; }
+    else { state.clients.push({name, source:'Другое', stage:'Lead', category:selectedCategory, link}); }
+  }
+  saveState();
+  document.getElementById('caseForm').style.display='none';
+  renderCases();
+});
+function editCase(i){
+  const c = state.clients[i];
+  document.getElementById('caseEditIndex').value = i;
+  document.getElementById('csName').value = c.name;
+  document.getElementById('csLink').value = c.link||'';
+  selectedCategory = c.category||null;
+  buildCategoryRow();
+  document.getElementById('caseForm').style.display='block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function copyLink(link){
+  if(!link){ showToast('Ссылки нет'); return; }
+  navigator.clipboard.writeText(link).then(()=>showToast('Ссылка скопирована')).catch(()=>showToast('Не удалось скопировать'));
+}
+function buildCategoryFilterRow(){
+  const row = document.getElementById('categoryFilterRow'); row.innerHTML='';
+  const present = ['Все', ...new Set(state.clients.filter(c=>c.category).map(c=>c.category))];
+  present.forEach(cat=>{
+    const p = document.createElement('button'); p.className='pill small'; p.type='button'; p.textContent=cat;
+    if(cat===caseFilter) p.classList.add('selected');
+    p.addEventListener('click',()=>{ caseFilter=cat; renderCases(); });
+    row.appendChild(p);
+  });
+}
+function renderCases(){
+  buildCategoryFilterRow();
+  const list = document.getElementById('casesList');
+  const withCategory = state.clients.filter(c=>c.category);
+  const filtered = caseFilter==='Все' ? withCategory : withCategory.filter(c=>c.category===caseFilter);
+  if(!filtered.length){ list.innerHTML='<div class="empty">Пока нет сохранённых кейсов — добавь клиента с категорией и ссылкой на сайт</div>'; return; }
+  list.innerHTML='';
+  filtered.forEach(c=>{
+    const idx = state.clients.indexOf(c);
+    const div = document.createElement('div'); div.className='case-card';
+    div.innerHTML = `<div class="case-top">
+        <div><div class="name" style="font-size:15.5px;">${c.name}</div><span class="badge cat">${c.category}</span></div>
+        <button class="btn tiny secondary" data-edit="${idx}">Изменить</button>
+      </div>
+      ${c.link ? `<a class="case-link" href="${c.link}" target="_blank" rel="noopener">${c.link}</a>` : '<div class="dim" style="font-size:13px;margin-top:8px;">Ссылка не добавлена</div>'}
+      <div class="case-actions">
+        <button class="btn tiny dark" data-copy="${idx}">Копировать ссылку</button>
+        ${c.link ? `<a class="btn tiny secondary" style="text-decoration:none;text-align:center;" href="${c.link}" target="_blank" rel="noopener">Открыть</a>` : ''}
+      </div>`;
+    list.appendChild(div);
+  });
+  list.querySelectorAll('button[data-edit]').forEach(b=>b.addEventListener('click',()=>editCase(parseInt(b.dataset.edit))));
+  list.querySelectorAll('button[data-copy]').forEach(b=>b.addEventListener('click',()=>copyLink(state.clients[parseInt(b.dataset.copy)].link)));
+}
+
+// ---------- GOALS ----------
+document.getElementById('addGoalToggle').addEventListener('click', ()=>{
+  const f = document.getElementById('goalForm');
+  f.style.display = f.style.display==='none' ? 'block' : 'none';
+});
+document.getElementById('saveGoalBtn').addEventListener('click', ()=>{
+  const title = document.getElementById('gTitle').value.trim();
+  const amount = parseFloat(document.getElementById('gAmount').value);
+  const date = document.getElementById('gDate').value;
+  if(!title || !amount || !date){ alert('Заполни все поля'); return; }
+  state.goals.push({title, amount, date, created: new Date().toISOString(), advice:null});
+  saveState();
+  document.getElementById('gTitle').value=''; document.getElementById('gAmount').value=''; document.getElementById('gDate').value='';
+  document.getElementById('goalForm').style.display='none';
+  renderGoals();
+});
+
+function generateAdvice(goal){
+  const net = state.entries.reduce((s,e)=>s+e.net,0);
+  const remaining = Math.max(0, goal.amount-net);
+  const daysLeft = Math.max(1, Math.ceil((new Date(goal.date) - new Date())/86400000));
+  const weeksLeft = Math.max(1, Math.round(daysLeft/7));
+  const perWeekNeeded = remaining/weeksLeft;
+
+  const active = state.clients.filter(c=>c.stage!=='Выиграно' && c.stage!=='Проиграно');
+  const byStage = {};
+  active.forEach(c=>{ byStage[c.stage]=(byStage[c.stage]||0)+1; });
+  let bottleneck = null;
+  if((byStage['Lead']||0)+(byStage['Контакт установлен']||0) > (byStage['Ответил']||0)+(byStage['Звонок назначен']||0)) bottleneck='ответы на первый контакт';
+  else if((byStage['Ответил']||0) > (byStage['Звонок назначен']||0)) bottleneck='перевод ответивших в звонок';
+  else if((byStage['Звонок проведён']||0) > (byStage['Предложение отправлено']||0)) bottleneck='отправка предложений после звонков';
+  else if((byStage['Предложение отправлено']||0) > 0) bottleneck='закрытие отправленных предложений';
+
+  if(remaining<=0){
+    return `Цель уже достигнута по чистому доходу (${fmtEur(net)} накоплено). Можно смело ставить следующую, более амбициозную цель.`;
+  }
+
+  const dealsAtStart = Math.ceil(remaining/ (400*0.63));
+  const dealsAtBusiness = Math.ceil(remaining/ (1200*0.63));
+
+  let advice = `Осталось накопить ${fmtEur(remaining)} за ${daysLeft} дн. (~${fmtEur(perWeekNeeded)}/неделю). `;
+  advice += `Это примерно ${dealsAtStart} сделок уровня START или ${dealsAtBusiness} сделок уровня BUSINESS. `;
+  if(bottleneck){
+    advice += `Судя по текущим клиентам, узкое место сейчас — ${bottleneck}. Сфокусируй ближайшую неделю именно на этом, а не на новых лидах. `;
+  } else if(active.length===0){
+    advice += `Активных клиентов в воронке сейчас нет — приоритет №1: тёплые каналы (Telegram-группы, бильярд-контакты, рекомендации от прошлых клиентов), это то, что уже давало результат. `;
+  }
+  advice += `Не забывай про recurring-поддержку (€30-50/мес) — она копится параллельно и снижает нагрузку на новые продажи каждый месяц.`;
+  return advice;
+}
+
+function renderGoals(){
+  const list = document.getElementById('goalsList');
+  if(!state.goals.length){ list.innerHTML='<div class="card empty">Пока нет целей</div>'; return; }
+  const net = state.entries.reduce((s,e)=>s+e.net,0);
+  list.innerHTML='';
+  state.goals.forEach((g,i)=>{
+    const pct = Math.min(100, Math.round((net/g.amount)*100));
+    const daysLeft = Math.max(0, Math.ceil((new Date(g.date) - new Date())/86400000));
+    const card = document.createElement('div'); card.className='card';
+    card.innerHTML = `<span class="label">${g.title}</span>
+      <div class="stat-row">
+        <span class="num accenttext" style="font-size:22px;">${fmtEur(net)}</span>
+        <span class="dim" style="font-size:13px;">из ${fmtEur(g.amount)} · ${daysLeft} дн. осталось</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <button class="btn small secondary" data-idx="${i}">Как достичь быстрее?</button>
+      <div class="adviceBox" id="advice-${i}" style="margin-top:12px;font-size:14.5px;line-height:1.55;${g.advice?'':'display:none;'}">${g.advice||''}</div>`;
+    list.appendChild(card);
+    card.querySelector('button[data-idx]').addEventListener('click', ()=>{
+      state.goals[i].advice = generateAdvice(state.goals[i]);
+      saveState();
+      renderGoals();
+    });
+  });
+}
+
+// ---------- INIT ----------
+(function init(){
+  loadState();
+  buildMoodRow(); buildTimeRow();
+  renderHistory();
+  renderFinance();
+  renderGoals();
+})();
+</script>
+</body>
+</html>
